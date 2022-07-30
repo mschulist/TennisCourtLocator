@@ -6,7 +6,7 @@ import nltk as nlp
 import ast
 import time
 from find_tennis_court import *
-from MapLoader import *
+from map_downloader import *
 
 app = Flask(__name__)
 
