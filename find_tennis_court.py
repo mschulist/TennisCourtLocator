@@ -3,6 +3,9 @@ import math
 import cv2 as cv
 import numpy as np
 from utilities import *
+import os
+
+
 
 def find_tennis_court_template_matching(image):
 
@@ -17,7 +20,7 @@ def find_tennis_court_template_matching(image):
 
     template = [temp1, temp2, temp3, temp4]
 
-    imagepath = ".\images\sateliteimage*.png"
+    imagepath = "./images/sateliteimage*.png"
     images = glob.glob(imagepath)
 
 
@@ -33,12 +36,16 @@ def find_tennis_court_template_matching(image):
 
         w, h = temp1.shape[::-1]
         res = cv.matchTemplate(img_gray, temp, cv.TM_CCOEFF_NORMED)
-        threshold = 0.9
+        threshold = 0.4 # CHANGE LATER
         loc = np.where(res >= threshold)
         for pt in zip(*loc[::-1]):
             found_court = True
             cv.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
                          2)
+
+    # git doesn't sync empty dirs
+    if not os.path.exists("./labeled_images/"):
+        os.mkdir("./labeled_images/")
 
     if found_court:
         labeled_file_name = "./labeled_images/" + str(centerXCord) + "_" + str(
@@ -180,7 +187,7 @@ def find_tennis_court_hough_analysis(image_filename):
 ## Return a list of tuple coordinates
 # [(centerXCord, centerYCord, pixelsX, pixelsY), (centerXCord, centerYCord, pixelsX, pixelsY) ...]
 def find_tennis_court(list_of_images=None):
-    imagepath = ".\images\sateliteimage*.png"
+    imagepath = "./images/sateliteimage*.png"
     images = glob.glob(imagepath)
 
     result_list = []

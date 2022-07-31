@@ -13,6 +13,12 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/foo": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+for image in glob.glob("./labeled_images/*"):
+    os.remove(image)
+
+for image in glob.glob("./images/sateliteimage*.png"):
+    os.remove(image)
+
 @app.route('/foo', methods=['GET','OPTIONS'])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def foo():

@@ -1,5 +1,6 @@
 import urllib.request
 import numpy
+import glob
 import math
 import time
 import random
@@ -11,12 +12,10 @@ import os
 f = open("apikey.txt", "r")
 apikey = f.read()
 
-# Making images dir since git doesn't sync empty dirs
-if not os.path.exists("./images"):
-    os.mkdir("./images")
-
-
 def download_image(lat, long, zoom = 18, size = 640, scale = 2, maptype = "satellite", key = apikey):
+    # Making images dir since git doesn't sync empty dirs
+    if not os.path.exists("./images"):
+        os.mkdir("./images")
     image_url = "https://maps.googleapis.com/maps/api/staticmap?center=" + str(lat) + "," + str(long) + "&zoom=" + str(zoom) + "&scale=" + str(scale) + "&size=" + str(size) + "x" + str(size) + "&maptype=" + maptype + "&key=" + key
     urllib.request.urlretrieve(image_url, "./images/sateliteimage_" + str(lat) + "_" + str(long) + ".png")
     return "./images/sateliteimage_" + str(lat) + "_" + str(long) + ".png"

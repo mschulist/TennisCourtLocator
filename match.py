@@ -17,7 +17,7 @@ def find_tennis_court_breadcrumb():
 
     template = [temp1, temp2, temp3, temp4]
 
-    imagepath = ".\images\sateliteimage*.png"
+    imagepath = "./images/sateliteimage*.png"
     images = glob.glob(imagepath)
 
     final_result_list = []
