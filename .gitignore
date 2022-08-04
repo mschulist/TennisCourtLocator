@@ -4,4 +4,4 @@ apikey.txt
 images/
 labeled_images/
 *.jpg
-__pycache__
+__pycache__/

@@ -4,25 +4,36 @@ import cv2 as cv
 import numpy as np
 from utilities import *
 import os
+import imutils
 
+def cv_image_read(image_path):
+    images = []
+    temps = []
+    for i in range(0, 360, 10):
+        img = cv.imread(image_path)
+        rotated = imutils.rotate(img, angle = i)
+        for j in range(85, 118, 3):
+            width = int(img.shape[0] * (j / 100))
+            height = int(img.shape[1] * (j / 100))
+            dim = (width, height)
+            images.append(cv.resize(rotated, dim, interpolation = cv.INTER_AREA))
+
+    
+    for i in range(len(images)):
+        temps.append(cv.cvtColor(images[i], cv.COLOR_BGR2GRAY))
+    return temps
 
 
 def find_tennis_court_template_matching(image):
 
-    template1 = cv.imread('sample_courts/court1.png')
-    template2 = cv.imread('sample_courts/court2.png')
-    template3 = cv.imread('sample_courts/court3.png')
-    template4 = cv.imread('sample_courts/court4.png')
-    temp1 = cv.cvtColor(template1, cv.COLOR_BGR2GRAY)
-    temp2 = cv.cvtColor(template2, cv.COLOR_BGR2GRAY)
-    temp3 = cv.cvtColor(template3, cv.COLOR_BGR2GRAY)
-    temp4 = cv.cvtColor(template4, cv.COLOR_BGR2GRAY)
+    temp1 = cv.imread("./sample_courts/court1.png")
+    temp1 = cv.cvtColor(temp1, cv.COLOR_BGR2GRAY) # bad code ik don't judge
 
-    template = [temp1, temp2, temp3, temp4]
 
-    imagepath = "./images/sateliteimage*.png"
-    images = glob.glob(imagepath)
+    template = []
 
+    for sample in glob.glob("./sample_courts/court*.png"): 
+        template.extend(cv_image_read(sample))
 
     img_rgb = cv.imread(image)
     img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
@@ -33,15 +44,15 @@ def find_tennis_court_template_matching(image):
 
     found_court = False
     for temp in template:
-
         w, h = temp1.shape[::-1]
         res = cv.matchTemplate(img_gray, temp, cv.TM_CCOEFF_NORMED)
-        threshold = 0.4 # CHANGE LATER
+        threshold = 0.67 # CHANGE LATER
+        if np.max(res) >= threshold:
+                print(np.max(res)) # for debugging and fun
         loc = np.where(res >= threshold)
         for pt in zip(*loc[::-1]):
             found_court = True
-            cv.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
-                         2)
+            cv.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
 
     # git doesn't sync empty dirs
     if not os.path.exists("./labeled_images/"):
